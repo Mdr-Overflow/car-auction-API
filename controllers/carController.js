@@ -49,9 +49,6 @@ exports.getCarById = catchAsync(async (req, res, next) => {
       car: carID,
     },
   });
-  res.status(200).json({
-    status: 'success',
-  });
 });
 
 exports.createCar = catchAsync(async (req, res, next) => {
