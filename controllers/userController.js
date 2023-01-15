@@ -2,6 +2,7 @@
 const userModel = require('../models/userModel');
 const interestModel = require('../models/interestModel');
 const catchAsync = require('../utils/catchAsync');
+const bcrypt = require('bcrypt');
 
 var populateQuery = { path: "Interests Cars", options: { _recursed: true } } 
                                                         // recursed is there so it doens't loop inf.
@@ -18,10 +19,10 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
   excludedFields.forEach((el) => delete queryObj[el]);
 
   // Advanced filtering 
- /* 
+ 
   let queryStr = JSON.stringify(queryObj);
   queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
- */
+ 
   // eslint-disable-next-line prefer-const
   let query = userModel.find(JSON.parse(queryStr));
 
@@ -46,6 +47,34 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.createUser = catchAsync(async (req, res, next) => {
+    const newUser = await userModel.create(req.body);
+
+    bcrypt.hash(newUser.password, 10, function (err, hash) {
+        if (err) {
+          client.close();
+          return alert(err);
+    }
+    console.log(hash)
+    console.log(newUser.password)
+     userModel.findByIdAndUpdate(
+        req.params.id ,
+        { $push: { password: hash } },
+     { new: true, useFindAndModify: false }
+   );
+})
+
+        
+        
+  
+    res.status(201).json({
+      status: 'success',
+      data: {
+        user: newUser,
+      },
+})
+    });
 
 
 exports.getUserById = catchAsync(async (req, res, next) => {
@@ -80,12 +109,18 @@ exports.updateUser = catchAsync(async (req, res, next) => {
 
 exports.deleteUser = catchAsync(async (req, res, next) => {
     // eslint-disable-next-line no-unused-vars
-    const deletedUser = await userModel.findByIdAndDelete(req.params.id);
+    
     // must delete interest list as well
     const query = { user_id: req.params.id };
     const deleteInterests = await interestModel.find(query);
-    await interestModel.deleteMany(deleteInterests);
+    console.log(deleteInterests)
 
+    if (deleteInterests.length != 0){
+         await interestModel.deleteMany(deleteInterests);
+    }
+
+    const deletedUser = await userModel.findByIdAndDelete(req.params.id);
+    
     res.status(204).json({
       status: 'success',
     });

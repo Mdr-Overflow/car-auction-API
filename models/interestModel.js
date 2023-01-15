@@ -13,12 +13,12 @@ const interestSchema = new mongoose.Schema({
     ]
   },
   
-  Car: [
+  Car: 
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Car"                 //litera mare la inceput - numele tabelei
     }
-  ],
+  
   
 
 }, { collection: 'interests' });

@@ -1,6 +1,6 @@
 
 const interestModel = require('../models/interestModel');
-const userModel = require('../models/UserModel');
+const userModel = require('../models/userModel');
 const carModel = require('../models/carModel');
 const catchAsync = require('../utils/catchAsync');
 /*
@@ -16,10 +16,10 @@ exports.getAllInterests = catchAsync(async (req, res, next) => {
   excludedFields.forEach((el) => delete queryObj[el]);
 
   // Advanced filtering 
- /* 
+ 
   let queryStr = JSON.stringify(queryObj);
   queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
- */
+ 
   // eslint-disable-next-line prefer-const
 
   let query = interestModel.find(JSON.parse(queryStr));
@@ -45,14 +45,15 @@ exports.getAllInterests = catchAsync(async (req, res, next) => {
     },
   });
 });
-// userID first then interestPropr. after the the CarID  // this is used when the "watch or bid or sell buttons are pressed"
+// userID first then  CarID  // this is used when the "watch or bid or sell buttons are pressed"
 exports.createInterest = catchAsync(async (req, res, next) => {
-    const getUser = await userModel.findById(req.body);
+    const getUser = await userModel.findById(req.params.user_id);
+    const getCar = await carModel.findById(req.params.car_id);
     const newInterest = await interestModel.create(req.body);
-    const getCar = await carModel.findById(req.body);
+   
 
     await userModel.findByIdAndUpdate(
-            getUser.id ,
+            req.params.user_id ,
         { $push: { Interests: newInterest.id } },
         { new: true, useFindAndModify: false }
       );
@@ -60,12 +61,16 @@ exports.createInterest = catchAsync(async (req, res, next) => {
 
 //    user = await getUserWithPopulate(getUser.id);    // depinde de design , daca ii aici mai mult shit in db , daca ->
                                                            // -> daca ii la user un query in plus la afisare
- await interestModel.findByIdAndUpdate(
-            newInterest.id ,
-        { $push: { Cars: getCar.id } },
-        { new: true, useFindAndModify: false }
-      );
+    
+    console.log(newInterest.id)
 
+    await interestModel.findByIdAndUpdate(
+                newInterest.id ,
+            { $push: { Car: req.params.car_id } },
+            { new: true, useFindAndModify: false }
+        );
+
+    
 
       
     res.status(201).json({

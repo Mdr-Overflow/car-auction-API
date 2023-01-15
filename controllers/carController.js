@@ -55,11 +55,11 @@ exports.getCarById = catchAsync(async (req, res, next) => {
 });
   //needs user id first
 exports.createCar = catchAsync(async (req, res, next) => {
-  const getUser = await userModel.findById(req.body);
+  const getUser = await userModel.findById(req.params.id);
   const newCar = await carModel.create(req.body);
 
   await userModel.findByIdAndUpdate(
-    getUser.id ,
+    req.params.id ,
 { $push: { Cars: newCar.id } },
 { new: true, useFindAndModify: false }
 );

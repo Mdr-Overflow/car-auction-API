@@ -5,7 +5,8 @@ const interestController = require('../controllers/interestController');
 
 const router = express.Router();
 
-router.route('/').get(interestController.getAllInterests).post(interestController.createInterest);
+router.route('/').get(interestController.getAllInterests)
+router.route('/:user_id/:car_id').post(interestController.createInterest);
 router
   .route('/:id')
   .get(interestController.getInterestById)
