@@ -148,7 +148,10 @@ const carSchema = new mongoose.Schema({
     type: Date,
   },
   images: [String],
-});
+  views: {
+    type: Number,
+  }
+}, { collection: 'cars' });
 
 carSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });

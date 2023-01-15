@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 
 const carModel = require('../models/carModel');
+const userModel = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 
 exports.getAllCars = catchAsync(async (req, res, next) => {
@@ -39,6 +40,8 @@ exports.getAllCars = catchAsync(async (req, res, next) => {
 });
 
 exports.getCarById = catchAsync(async (req, res, next) => {
+
+  
   const carID = await carModel.findById(req.params.id);
   if (!carID) {
     throw new Error('This car does not exist');
@@ -50,9 +53,16 @@ exports.getCarById = catchAsync(async (req, res, next) => {
     },
   });
 });
-
+  //needs user id first
 exports.createCar = catchAsync(async (req, res, next) => {
+  const getUser = await userModel.findById(req.body);
   const newCar = await carModel.create(req.body);
+
+  await userModel.findByIdAndUpdate(
+    getUser.id ,
+{ $push: { Cars: newCar.id } },
+{ new: true, useFindAndModify: false }
+);
 
   res.status(201).json({
     status: 'success',
