@@ -3,11 +3,11 @@ const { Date } = require('mongoose/lib/schema/index');
 const slugify = require('slugify');
 
 const offerSchema = new mongoose.Schema({
-  MoneySum:{
+  moneySum:{
     type:Number,
     require:[true,"nu-i gratis, MoneySum:?"]
   },
-  PostData:{
+  postDate:{
     type:Date,
     require:[true,"PostData:?"]
   },

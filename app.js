@@ -5,7 +5,8 @@ const morgan = require('morgan');
 const carRouter = require('./routes/carRoutes');
 const userRouter = require('./routes/userRoutes');
 const interestRouter = require('./routes/interestRoutes');
-//const carRouter = require('./routes/carRoutes');
+const offerRouter = require('./routes/offerRoutes');
+const auctionRouter = require('./routes/auctionRoutes');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -24,7 +25,8 @@ app.use(express.static(`${__dirname}/public`));
 app.use('/api/v1/cars', carRouter); //middleware
 app.use('/api/v1/users', userRouter)
 app.use('/api/v1/interests', interestRouter)
-//app.use('/api/v1/cars', carRouter)
+app.use('/api/v1/offers', offerRouter)
+app.use('/api/v1/auctions', auctionRouter)
 
 app.all('*', (req, res, next) => {
   next(new AppError('Can not find this url on this server', 404));
