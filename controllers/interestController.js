@@ -3,11 +3,11 @@ const interestModel = require('../models/interestModel');
 const userModel = require('../models/userModel');
 const carModel = require('../models/carModel');
 const catchAsync = require('../utils/catchAsync');
-/*
-const getUserWithPopulate = function(id) {
-    return userModel.findById(id).populate("interests");
+
+const getCarWithPopulate = function(id) {
+    return interestModel.findById(id).populate("Car");
   };
-*/
+
 
 exports.getAllInterests = catchAsync(async (req, res, next) => {
   // Filtering
@@ -82,7 +82,7 @@ exports.createInterest = catchAsync(async (req, res, next) => {
   });
 
 exports.getInterestById = catchAsync(async (req, res, next) => {
-  const interestID = await interestModel.findById(req.params.id);
+  const interestID = await getCarWithPopulate(req.params.id);
   if (!interestID) {
     throw new Error('This interest does not exist');
   }
