@@ -67,6 +67,12 @@ exports.createCar = catchAsync(async (req, res, next) => {
 { new: true, useFindAndModify: false }
 );
 
+await carModel.findByIdAndUpdate(
+  newCar.id ,
+{ $push: { Seller: req.params.id } },
+{ new: true, useFindAndModify: false }
+);  
+
   res.status(201).json({
     status: 'success',
     data: {

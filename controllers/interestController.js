@@ -142,11 +142,11 @@ exports.deleteInterest = catchAsync(async (req, res, next) => {
      ); 
 
     
-    //2. Movie
+    //2. Car
 
     query = { Interests: new ObjectId(thiss.id) }; // this works
     
-    await movieModel.findOneAndUpdate( query, {   // this deletes the specific commentID from the nested obj array
+    await carModel.findOneAndUpdate( query, {   // this deletes the specific commentID from the nested obj array
           $pull: { Interests: thiss.id } },);
         
    

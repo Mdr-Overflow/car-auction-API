@@ -12,8 +12,8 @@ router
   .get(auctionController.getAuctionById)
   .patch(auctionController.updateAuction)
   .delete(auctionController.deleteAuction)
-  
-router.route('/:car_id').get(auctionController.getAuctionByCarId)
+
+router.route('/:car_id/:seller_id').get(auctionController.getAuctionByCarId)
 router
     .route('/:offer_id/:auction_id')
     .post(auctionController.addOffer)

@@ -5,7 +5,7 @@ const slugify = require('slugify');
 
 
 const interestModel = require('../models/interestModel');
-//const carModel = require('../models/movieModel');
+
 var ObjectId = require('mongoose').Types.ObjectId; 
 
 const carSchema = new mongoose.Schema({
@@ -112,10 +112,10 @@ const carSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Must contains a country name'],
   },
-  seller: {
-    type: String,
-    required: [true, 'Must contains a seller name'],
-    enums: ['private', 'company'],
+  Seller: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+   
   },
   emission: {
     type: String,
@@ -194,7 +194,7 @@ carSchema.pre('remove',  async function(next) {
       } while (size != 0)
   }
 
-  // auction
+  // auction 
   
 
 

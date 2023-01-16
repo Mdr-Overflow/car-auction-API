@@ -7,7 +7,11 @@ const auctionModel = require('../models/auctionModel');
 const catchAsync = require('../utils/catchAsync');
 
 const SuperPopulate = function(id) {
-    return auctionModel.findById(id).populate("car");
+    return auctionModel.findById(id).populate("car")
+                                    .populate("seller")
+                                    .populate("bidders")
+                                    .populate("offers")
+                                    .populate("current_accepted_offer")
   };
 
 
@@ -49,15 +53,11 @@ exports.getAllAuctions = catchAsync(async (req, res, next) => {
 });
 
    
-// needs car_id
+// needs car_id, seller_id
 exports.createAuction = catchAsync(async (req, res, next) => {
     const getCar = await carModel.findById(req.params.car_id);
     const newAuction = await auctionModel.create(req.body);
 
-
-//    user = await getUserWithPopulate(getUser.id);    // depinde de design , daca ii aici mai mult shit in db , daca ->
-                                                           // -> daca ii la user un query in plus la afisare
-    
     console.log(newAuction.id)
 
     await auctionModel.findByIdAndUpdate(
@@ -79,7 +79,7 @@ exports.createAuction = catchAsync(async (req, res, next) => {
 
 
   exports.getAuctionByCarId = catchAsync(async (req, res, next) => {
-    const auctionID = await getCarWithPopulate(req.params.car_id);
+    const auctionID = await SuperPopulate(req.params.car_id);
     if (!auctionID) {
       throw new Error('This auction does not exist');
     }
