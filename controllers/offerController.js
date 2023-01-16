@@ -48,6 +48,10 @@ exports.getAllOffers = catchAsync(async (req, res, next) => {
 exports.createOffer = catchAsync(async (req, res, next) => {
     const user = await userModel.findById(req.params.id)
     const newOffer = await offerModel.create(req.body);
+    
+    //uncomment later
+  //  if(req.body.moneySum > user.balance ) throw {name : "Money Ballance Error", message : "User used more money on offer then they have"}; 
+
 
     await offerModel.findByIdAndUpdate(
         newOffer.id ,
@@ -99,16 +103,11 @@ exports.deleteOffer = catchAsync(async (req, res, next) => {
     // eslint-disable-next-line no-unused-vars
     
     // must delete interest list as well
-    const query = { offer_id: req.params.id };
-    const deleteInterests = await interestModel.find(query);
-    console.log(deleteInterests)
-
-    if (deleteInterests.length != 0){
-         await interestModel.deleteMany(deleteInterests);
-    }
-
-    const deletedOffer = await offerModel.findByIdAndDelete(req.params.id);
     
+
+    const deletedOffer = await offerModel.findByIdAndRemove(req.params.id);
+    
+    deletedOffer.remove();
     res.status(204).json({
       status: 'success',
     });

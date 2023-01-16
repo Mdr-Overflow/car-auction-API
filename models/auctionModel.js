@@ -37,6 +37,12 @@ const auctionSchema = new mongoose.Schema({
         type:Date,
         require:[true,"trebe data de final bulangiule, EndDate:?"]
     }
+    ,
+    isOpen:{
+        type:Boolean,
+        require:[true,"isOpen:?"],
+        default:false
+    }
 
 }, { collection: 'auctions' });
 

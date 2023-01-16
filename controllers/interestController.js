@@ -4,6 +4,11 @@ const userModel = require('../models/userModel');
 const carModel = require('../models/carModel');
 const catchAsync = require('../utils/catchAsync');
 
+const mongoose = require('mongoose');
+
+
+var ObjectId = require('mongoose').Types.ObjectId; 
+
 const getCarWithPopulate = function(id) {
     return interestModel.findById(id).populate("Car");
   };
@@ -47,17 +52,23 @@ exports.getAllInterests = catchAsync(async (req, res, next) => {
 });
 // userID first then  CarID  // this is used when the "watch or bid or sell buttons are pressed"
 exports.createInterest = catchAsync(async (req, res, next) => {
-    const getUser = await userModel.findById(req.params.user_id);
-    const getCar = await carModel.findById(req.params.car_id);
+   // const getUser = await userModel.findById(req.params.user_id);
+   // const getCar = await carModel.findById(req.params.car_id);
     const newInterest = await interestModel.create(req.body);
    
-
+    //add to user
     await userModel.findByIdAndUpdate(
             req.params.user_id ,
         { $push: { Interests: newInterest.id } },
         { new: true, useFindAndModify: false }
       );
     
+    //add to car
+      await carModel.findByIdAndUpdate(
+        req.params.car_id ,
+    { $push: { Interests: newInterest.id } },
+    { new: true, useFindAndModify: false }
+  );  
 
 //    user = await getUserWithPopulate(getUser.id);    // depinde de design , daca ii aici mai mult shit in db , daca ->
                                                            // -> daca ii la user un query in plus la afisare
@@ -70,7 +81,7 @@ exports.createInterest = catchAsync(async (req, res, next) => {
             { new: true, useFindAndModify: false }
         );
 
-    
+        
 
       
     res.status(201).json({
@@ -80,6 +91,7 @@ exports.createInterest = catchAsync(async (req, res, next) => {
       },
     });
   });
+
 
 exports.getInterestById = catchAsync(async (req, res, next) => {
   const interestID = await getCarWithPopulate(req.params.id);
@@ -108,10 +120,36 @@ exports.updateInterest = catchAsync(async (req, res, next) => {
     });
   });
   
-// Used when user deselects watch or sells car or car is sold
+// Used when user deselects watch or sells car or car is sold // kills the id in the car and user table as well
 exports.deleteInterest = catchAsync(async (req, res, next) => {
     // eslint-disable-next-line no-unused-vars
-    const deletedInterest = await interestModel.findByIdAndDelete(req.params.id);
+    //const deletedInterest = await interestModel.findByIdAndDelete(req.params.id);
+   
+    const thiss =  await interestModel.findByIdAndRemove(req.params.id);
+   
+    //thiss = deletedComment;
+    console.log('this gets printed first');
+    
+    console.log(thiss)
+    console.log(thiss.id)
+    console.log(new mongoose.Types.ObjectId(thiss.id))
+    
+    var query = { Interests: new ObjectId(thiss.id) }; // this works
+    
+    await userModel.findOneAndUpdate( query, {   // this deletes the specific commentID from the nested obj array
+          $pull: { Interests: thiss.id } },
+        
+     ); 
+
+    
+    //2. Movie
+
+    query = { Interests: new ObjectId(thiss.id) }; // this works
+    
+    await movieModel.findOneAndUpdate( query, {   // this deletes the specific commentID from the nested obj array
+          $pull: { Interests: thiss.id } },);
+        
+   
     res.status(204).json({
       status: 'success',
     });

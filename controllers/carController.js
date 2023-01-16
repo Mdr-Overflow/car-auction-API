@@ -2,7 +2,10 @@
 
 const carModel = require('../models/carModel');
 const userModel = require('../models/userModel');
+const auctionModel = require('../models/auctionModel');
+
 const catchAsync = require('../utils/catchAsync');
+
 
 exports.getAllCars = catchAsync(async (req, res, next) => {
   // Filtering
@@ -87,7 +90,17 @@ exports.updateCar = catchAsync(async (req, res, next) => {
 
 exports.deleteCar = catchAsync(async (req, res, next) => {
   // eslint-disable-next-line no-unused-vars
-  const deletedCar = await carModel.findByIdAndDelete(req.params.id);
+  const deletedCar = await carModel.findByIdAndRemove(req.params.id);
+  
+  //we must cancel auction if car is deleted
+
+  
+  var query = { Car: new ObjectId(deletedCar.id) };
+
+  const remAuction = await auctionModel.findOneAndRemove(query);
+  console.log(remAuction)
+
+  deletedCar.remove()
   res.status(204).json({
     status: 'success',
   });

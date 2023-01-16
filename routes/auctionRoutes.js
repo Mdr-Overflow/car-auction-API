@@ -12,7 +12,7 @@ router
   .get(auctionController.getAuctionById)
   .patch(auctionController.updateAuction)
   .delete(auctionController.deleteAuction)
-  .get(auctionController.getAllOffers);
+  
 router.route('/:car_id').get(auctionController.getAuctionByCarId)
 router
     .route('/:offer_id/:auction_id')

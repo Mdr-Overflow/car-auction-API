@@ -6,7 +6,7 @@ const offerModel = require('../models/offerModel');
 const auctionModel = require('../models/auctionModel');
 const catchAsync = require('../utils/catchAsync');
 
-const getCarWithPopulate = function(id) {
+const SuperPopulate = function(id) {
     return auctionModel.findById(id).populate("car");
   };
 
@@ -192,7 +192,7 @@ exports.makeOfferFinal = catchAsync(async (req, res, next) =>{
 { $push: { isFinal: true } },
 { new: true, useFindAndModify: false }
 );
-
+    //close auction
 
       res.status(200).json({
         status: 'success',
@@ -203,7 +203,7 @@ exports.makeOfferFinal = catchAsync(async (req, res, next) =>{
     } ); 
 
 
-
+//close auction = update with isOpen = false
 
 
 exports.updateAuction = catchAsync(async (req, res, next) => {
@@ -224,6 +224,8 @@ exports.updateAuction = catchAsync(async (req, res, next) => {
 exports.deleteAuction = catchAsync(async (req, res, next) => {
     // eslint-disable-next-line no-unused-vars
     const deletedAuction = await auctionModel.findByIdAndDelete(req.params.id);
+
+
     res.status(204).json({
       status: 'success',
     });

@@ -1,6 +1,7 @@
 
 const userModel = require('../models/userModel');
 const interestModel = require('../models/interestModel');
+const auctionModel = require('../models/auctionModel');
 const catchAsync = require('../utils/catchAsync');
 const bcrypt = require('bcrypt');
 
@@ -111,16 +112,11 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
     // eslint-disable-next-line no-unused-vars
     
     // must delete interest list as well
-    const query = { user_id: req.params.id };
-    const deleteInterests = await interestModel.find(query);
-    console.log(deleteInterests)
+   
 
-    if (deleteInterests.length != 0){
-         await interestModel.deleteMany(deleteInterests);
-    }
-
-    const deletedUser = await userModel.findByIdAndDelete(req.params.id);
+    const deletedUser = await userModel.findByIdAndRemove(req.params.id);
     
+    deletedUser.remove();
     res.status(204).json({
       status: 'success',
     });
