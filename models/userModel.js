@@ -1,11 +1,17 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-
+const { MongoClient } = require("mongodb");
+const connectionString = process.env.ATLAS_URI;
 const interestModel = require('../models/interestModel');
 const offerModel = require('../models/offerModel');
 const auctionModel = require('../models/auctionModel');
 //const carModel = require('../models/movieModel');
 var ObjectId = require('mongoose').Types.ObjectId; 
+
+const mclient = new MongoClient(connectionString, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 
 const userSchema = new mongoose.Schema({
@@ -68,10 +74,40 @@ const userSchema = new mongoose.Schema({
 
 }, { collection: 'users' });
 
-userSchema.pre('save', function (next) {
-  this.slug = slugify(this.email, { lower: true });
-  next();
+
+
+ //Hook for getting email out of secure cred. database
+/*
+ userSchema.pre('save',  function (next) {
+  console.log(this)
+
+  mclient.connect(function (err, client) {
+    if (err || !client) {
+      throw err
+    }
+
+
+
+    dbConnection = client.db("db-name");
+    console.log("Successfully connected to creds. MongoDB.");
+    
+    const query = { email: this.email };
+    console.log(this.email)
+    console.log(query)
+    let users = dbConnection.collection('users');
+    console.log(users.email)
+    let found = users.find(query).toArray(function (err, result) {
+      if (err) {
+       console.log(err)
+     } else {
+        console.log(result)
+      }
+    });
+
+  
 });
+    next(); })
+*/
 
 
  // PRE-HOOK FOR DELETING "CASCADE-STYLE"
